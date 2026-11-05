@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="edu.secure.assign.mapper.LoanMapper">
+	
+	<!-- 문자열 치환 방식을 바인딩 방식(#{})으로 변경: 입력값이 SQL 문법으로 해석되지 않음 -->
+    <select id="findByCustomer" resultType="edu.secure.assign.domain.Loan">
+        SELECT loan_id, customer_id, balance, status
+          FROM loan
+         WHERE customer_id = #{customerId}
+    </select>
+	
+	<!-- 정렬 컬럼명은 바인딩이 불가능. Service 에서 허용 목록으로 검증한 값만 들어옴 -->
+    <select id="findSorted" resultType="edu.secure.assign.domain.Loan">
+        SELECT loan_id, customer_id, balance, status
+          FROM loan
+         WHERE customer_id = #{customerId}
+         ORDER BY ${sortBy}
+    </select>
+
+    <select id="findById" resultType="edu.secure.assign.domain.Loan">
+        SELECT loan_id, customer_id, balance, status
+          FROM loan
+         WHERE loan_id = #{loanId}
+    </select>
+
+	<!-- 대출번호 + 소유자(로그인 고객) 조건을 함께 걸어 본인 대출만 조회 -->
+	<select id="findByIdAndCustomer" resultType="edu.secure.assign.domain.Loan">
+        SELECT loan_id, customer_id, balance, status
+        FROM loan
+        WHERE loan_id = #{loanId}
+         	AND customer_id = #{customerId}
+	</select>
+
+    <select id="selectBalance" resultType="java.lang.Long">
+        SELECT balance FROM loan WHERE loan_id = #{loanId}
+    </select>
+
+    <update id="updateBalance">
+        UPDATE loan SET balance = #{balance} WHERE loan_id = #{loanId}
+    </update>
+    
+    <!-- 소유자 확인 + 잔액 충분 확인 + 차감을 한 문장에서 처리 -->
+	<update id="repayConditional">
+		UPDATE loan 
+		SET balance = balance - #{amount}
+		WHERE loan_id = #{loanId}
+		AND customer_id = #{customerId}
+		AND balance >= #{amount}
+	</update>    
+</mapper>
